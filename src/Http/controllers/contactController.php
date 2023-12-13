@@ -23,8 +23,14 @@ class contactController extends Controller
             'subject' => 'required|max:255',
             'message' => 'required'
         ]);
-        contact::create($req->all());
-        Mail::to(config('contact.send_mail_to'))->send(new contactMaillable($req->message,$req->name,$req->email,$req->subject));
-        return back()->with('Message send successfully.');
+        try{
+
+            contact::create($req->all());
+            Mail::to(config('contact.send_mail_to'))->send(new contactMaillable($req->message,$req->name,$req->email,$req->subject));
+            return back()->with(['status'=>'Message send successfully.']);
+        }catch(\Exception){
+            return back()->with(['status'=>'Their is a problem while sending message.']);
+
+        }
     }
 }
